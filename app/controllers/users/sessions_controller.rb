@@ -25,6 +25,9 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def log_out_failure
-    render json: { message: 'Hmm nothing happened.' }, status: :unauthorized
+    render json: {
+      status: 401,
+      message: "Couldn't find an active session"
+    }, status: :unauthorized
   end
 end
