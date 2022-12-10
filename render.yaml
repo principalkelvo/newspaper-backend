@@ -1,6 +1,6 @@
 databases:
   - name: newspaper_backend
-    ipAllowList: []
+    # ipAllowList: []
     databaseName: newspaper_backend
     user: newspaper_backend
 
@@ -9,7 +9,7 @@ services:
     name: newspaper_backend
     env: ruby
     buildCommand: "./bin/render-build.sh"
-    startCommand: bundle exec rails s
+    startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -17,8 +17,8 @@ services:
           property: connectionString
       - key: RAILS_MASTER_KEY
         sync: false
-    - type: redis
-      name: redis
-      ipAllowList: []
-      plan: free
-      maxmemoryPolicy: noeviction
+    # - type: redis
+    #   name: redis
+    #   ipAllowList: []
+    #   plan: free
+    #   maxmemoryPolicy: noeviction
