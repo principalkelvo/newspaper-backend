@@ -5,6 +5,17 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
+  def jwt_payload
+    super
+  end
+
+
+  # creates user roles 
+  enum role:[:user, :moderator, :admin]
+    after_initialize :set_default_role, :if => :new_record?
+    def set_default_role
+      self.role ||= :user
+    end
 end
 
 # When a token is dispatched to a user, the JTI claim is taken from the JTI column in the model (which was initialized when the record had been created).

@@ -3,17 +3,21 @@ class Users::SessionsController < Devise::SessionsController
 
   private
 
-  def respond_with(_resource, _opts = {})
+  def respond_with( resource, options= {})
     render json: {
-      message: 'You are logged in.',
-      user: current_user
+      status: {code: 200, message: 'You are logged in.', user: current_user}      
+      
     }, status: :ok
   end
 
   def respond_to_on_destroy
-    log_out_success && return if current_user
-
-    log_out_failure
+    jwt_payload = JWT.decode(request.headers['Authorization'].split(' ')[1], Rails.application.credentials.fetch(:devise_jwt_secret)).first
+    current_user = User.find(jwt_payload['sub'])
+    if current_user
+      log_out_success
+    else
+      log_out_failure
+    end
   end
 
   def log_out_success
@@ -21,6 +25,9 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def log_out_failure
-    render json: { message: 'Hmm nothing happened.' }, status: :unauthorized
+    render json: {
+      status: 401,
+      message: "Couldn't find an active session"
+    }, status: :unauthorized
   end
 end
